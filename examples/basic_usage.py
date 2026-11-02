@@ -26,6 +26,7 @@ def main():
     
     print("=" * 70)
     print("Integrated Pain Management System - Basic Usage Example")
+    print("Experimental prototype with synthetic fixtures; outputs are not clinically validated.")
     print("=" * 70)
     print()
     
@@ -94,8 +95,8 @@ def main():
     print(f"   Identified biomarkers: {', '.join(biomarkers)}")
     print()
     
-    # 6. Get AI-optimized neuromodulation parameters
-    print("6. Getting AI-optimized neuromodulation parameters...")
+    # 6. Display illustrative neuromodulation outputs (not a validated model)
+    print("6. Demonstrating illustrative neuromodulation outputs...")
     patient_profile = {
         "pain_level": 7,
         "pain_type": "chronic"
@@ -103,7 +104,7 @@ def main():
     parameters = neuro_ai.predict_optimal_parameters(patient_profile)
     print(f"   Recommended frequency: {parameters['frequency_hz']:.1f} Hz")
     print(f"   Recommended amplitude: {parameters['amplitude_ma']:.2f} mA")
-    print(f"   Confidence: {parameters['confidence_score']:.2%}")
+    print(f"   Placeholder confidence (not calibrated): {parameters['confidence_score']:.2%}")
     print()
     
     # 7. Record lifestyle data
@@ -123,7 +124,11 @@ def main():
     
     sleep_analysis = lifestyle_analytics.analyze_sleep_pain_correlation(patient_id)
     if sleep_analysis:
-        print(f"   Sleep-pain correlation: {sleep_analysis['correlation']:.2f}")
+        correlation = sleep_analysis["correlation"]
+        if correlation is None:
+            print("   Sleep-pain correlation: undefined (constant series)")
+        else:
+            print(f"   Sleep-pain correlation: {correlation:.2f}")
         print(f"   Recommendation: {sleep_analysis['recommendation']}")
     print()
     

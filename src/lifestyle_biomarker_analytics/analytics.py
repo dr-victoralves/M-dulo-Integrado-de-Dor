@@ -5,6 +5,7 @@ Analyzes lifestyle factors and biomarkers to understand pain patterns
 
 from typing import Dict, Any, List, Optional
 import logging
+from math import fsum, isfinite, sqrt
 
 logger = logging.getLogger(__name__)
 
@@ -45,13 +46,17 @@ class LifestyleBiomarkerAnalytics:
 
     def analyze_sleep_pain_correlation(self, patient_id: str) -> Optional[Dict[str, Any]]:
         """
-        Analyze correlation between sleep and pain levels.
+        Calculate Pearson correlation between recorded sleep and pain pairs.
 
         Args:
             patient_id: Unique patient identifier
 
         Returns:
-            Sleep-pain correlation analysis or None if insufficient data
+            Analysis or None if fewer than seven records are available.
+            The correlation field is None when either series has zero variance.
+
+        Raises:
+            ValueError: If a sleep or pain observation is not finite.
         """
         if patient_id not in self.patient_data or len(self.patient_data[patient_id]) < 7:
             return None
@@ -60,11 +65,21 @@ class LifestyleBiomarkerAnalytics:
         sleep_hours = [d["sleep_hours"] for d in data]
         pain_levels = [d["pain_level"] for d in data]
 
-        avg_sleep = sum(sleep_hours) / len(sleep_hours)
-        avg_pain = sum(pain_levels) / len(pain_levels)
+        if not all(isfinite(value) for value in sleep_hours + pain_levels):
+            raise ValueError("Sleep and pain observations must be finite")
 
-        # Simple correlation calculation
-        correlation = -0.6 if avg_sleep < 6 else -0.3  # Negative correlation
+        avg_sleep = fsum(sleep_hours) / len(sleep_hours)
+        avg_pain = fsum(pain_levels) / len(pain_levels)
+        sleep_deviations = [value - avg_sleep for value in sleep_hours]
+        pain_deviations = [value - avg_pain for value in pain_levels]
+        numerator = fsum(a * b for a, b in zip(sleep_deviations, pain_deviations))
+        denominator = (
+            sqrt(fsum(value * value for value in sleep_deviations))
+            * sqrt(fsum(value * value for value in pain_deviations))
+        )
+        correlation = (
+            max(-1.0, min(1.0, numerator / denominator)) if denominator > 0 else None
+        )
 
         return {
             "patient_id": patient_id,

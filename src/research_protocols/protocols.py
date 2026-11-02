@@ -32,7 +32,13 @@ class ResearchProtocols:
 
         Returns:
             Created protocol record
+
+        Raises:
+            ValueError: If the protocol identifier already exists.
         """
+        if protocol_id in self.protocols:
+            raise ValueError(f"Protocol {protocol_id} already exists")
+
         protocol = {
             "protocol_id": protocol_id,
             "title": protocol_details.get("title", ""),
@@ -104,10 +110,19 @@ class ResearchProtocols:
             patient_id: Unique patient identifier
             data_point: Type of data being collected
             data: Collected data
+
+        Raises:
+            ValueError: If the patient is not enrolled in this study.
         """
         if protocol_id not in self.studies:
             logger.warning(f"Protocol {protocol_id} not found for data collection")
             return
+
+        if not any(
+            participant["patient_id"] == patient_id
+            for participant in self.studies[protocol_id]["participants"]
+        ):
+            raise ValueError(f"Patient {patient_id} is not enrolled in protocol {protocol_id}")
 
         data_record = {
             "patient_id": patient_id,

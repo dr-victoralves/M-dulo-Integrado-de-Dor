@@ -1,10 +1,12 @@
 # Módulo Integrado de Dor (Integrated Pain Management System)
 
-A comprehensive, modular system for integrated pain management, combining clinical assessment, research protocols, AI-driven treatment optimization, and multi-omic data integration.
+An experimental modular prototype for exploring pain-management software contracts with synthetic examples.
+
+> **Draft prototype, not validated for clinical or production use.** State is stored in memory, and several modules use illustrative heuristics or placeholder outputs. Local tests verify selected software behavior; they do not establish treatment efficacy, calibrated confidence, security certification, or production readiness.
 
 ## Overview
 
-The Integrated Pain Management System is a Python-based platform designed to support healthcare professionals and researchers in managing chronic pain through evidence-based, personalized approaches. The system integrates multiple data sources and analytical tools to provide comprehensive pain assessment, treatment planning, and outcome tracking.
+The Integrated Pain Management System is a Python-based prototype of eight modules and their APIs. It demonstrates in-memory assessment records, data processing, study bookkeeping, and analytics using synthetic examples. Clinical validation, durable storage, access controls, and deployment validation are outside the implementation demonstrated here.
 
 ## System Architecture
 
@@ -40,20 +42,20 @@ Multi-omic data processing and integration for personalized pain medicine.
 - Multi-omic data integration
 
 ### 4. **Neuromodulation AI** (`neuromodulation_ai`)
-AI-powered optimization for neuromodulation treatments.
+Illustrative neuromodulation heuristics; no trained or clinically validated model is included.
 
 **Key Features:**
 - Treatment parameter prediction
 - Outcome forecasting
 - Treatment efficacy analysis
 - Parameter adjustment recommendations
-- Machine learning model integration
+- Placeholder for future machine learning model integration
 
 ### 5. **Lifestyle & Biomarker Analytics** (`lifestyle_biomarker_analytics`)
 Analysis of lifestyle factors and their relationship to pain patterns.
 
 **Key Features:**
-- Sleep-pain correlation analysis
+- Pearson correlation over recorded sleep-pain pairs (`None` for a constant series)
 - Exercise impact assessment
 - Stress level monitoring
 - Pain trigger identification
@@ -201,8 +203,14 @@ recommendations = analytics.generate_lifestyle_recommendations("PAT-001")
 
 ### Running Tests
 ```bash
-pytest tests/
+python -m pytest tests/
 ```
+
+Latest local verification: 33 tests passed on Windows/Python 3.13. The example
+`python examples/basic_usage.py` and Python compilation also passed. No CI or
+security-scan result was available for this PR. Regression tests cover required
+cohort fields, study membership, duplicate protocol IDs, and paired correlation.
+These checks do not establish clinical validity or readiness to deploy.
 
 ### Code Quality
 ```bash

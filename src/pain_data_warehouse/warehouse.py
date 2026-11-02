@@ -119,7 +119,7 @@ class PainDataWarehouse:
         for patient_id, patient in self.patients.items():
             match = True
             for key, value in criteria.items():
-                if key in patient["info"] and patient["info"][key] != value:
+                if key not in patient["info"] or patient["info"][key] != value:
                     match = False
                     break
 
