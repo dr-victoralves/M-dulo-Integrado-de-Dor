@@ -1,0 +1,87 @@
+# Integrated Pain Management System Configuration
+# Version 1.0.0
+
+system:
+  name: "Integrated Pain Management System"
+  version: "1.0.0"
+  environment: "production"
+  log_level: "INFO"
+
+modules:
+  integrated_pain_management:
+    enabled: true
+    
+  clinical_assessment_system:
+    enabled: true
+    pain_scales:
+      - "VAS"  # Visual Analog Scale
+      - "NRS"  # Numeric Rating Scale
+      - "BPI"  # Brief Pain Inventory
+    assessment_frequency_days: 7
+    
+  omic_integration_pipeline:
+    enabled: true
+    supported_omics:
+      - "genomic"
+      - "transcriptomic"
+      - "proteomic"
+      - "metabolomic"
+    data_format: "standard"
+    
+  neuromodulation_ai:
+    enabled: true
+    model_version: "1.0.0"
+    prediction_confidence_threshold: 0.7
+    parameter_ranges:
+      frequency_hz:
+        min: 10
+        max: 100
+      amplitude_ma:
+        min: 0.5
+        max: 5.0
+      pulse_width_us:
+        min: 100
+        max: 500
+        
+  lifestyle_biomarker_analytics:
+    enabled: true
+    tracking_metrics:
+      - "sleep_hours"
+      - "exercise_minutes"
+      - "stress_level"
+      - "diet_quality"
+    correlation_window_days: 30
+    
+  pain_data_warehouse:
+    enabled: true
+    storage_backend: "filesystem"
+    anonymization_enabled: true
+    backup_enabled: true
+    backup_frequency_hours: 24
+    
+  clinical_dashboard:
+    enabled: true
+    refresh_interval_seconds: 60
+    display_modules:
+      - "patient_overview"
+      - "population_metrics"
+      - "alerts"
+      - "trends"
+      
+  research_protocols:
+    enabled: true
+    protocol_types:
+      - "observational"
+      - "interventional"
+      - "randomized_controlled_trial"
+    irb_compliance_required: true
+
+security:
+  data_encryption: true
+  access_control: true
+  audit_logging: true
+  
+compliance:
+  hipaa_compliant: true
+  gdpr_compliant: true
+  data_retention_years: 7
