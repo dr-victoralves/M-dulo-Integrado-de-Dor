@@ -103,3 +103,35 @@ def test_correlation_rejects_nonfinite_observations(invalid):
         )
     with pytest.raises(ValueError, match="finite"):
         analytics.analyze_sleep_pain_correlation("TEST_ONLY")
+
+
+def test_partial_measurements_are_excluded_per_analysis():
+    analytics = LifestyleBiomarkerAnalytics()
+    for day in range(7):
+        analytics.record_lifestyle_data("P", str(day), {"pain_level": 8})
+    assert analytics.identify_pain_triggers("P") == []
+    assert analytics.analyze_sleep_pain_correlation("P") is None
+    analytics.record_lifestyle_data("P", "7", {"exercise_minutes": 20})
+    assert analytics.analyze_exercise_impact("P") is None
+    analytics.record_lifestyle_data("P", "8", {"pain_level": 8, "exercise_minutes": 0})
+    assert analytics.identify_pain_triggers("P") == ["sedentary_lifestyle"]
+
+
+def test_enrollment_retry_and_collection_before_first_enrollment():
+    research = ResearchProtocols()
+    research.create_protocol("S", {})
+    with pytest.raises(ValueError, match="not enrolled"):
+        research.collect_study_data("S", "P", "visit", {})
+    first = research.enroll_participant("S", "P")
+    assert research.enroll_participant("S", "P") == first
+    assert research.get_protocol_status("S")["total_participants"] == 1
+
+
+def test_duplicate_patient_preserves_history():
+    warehouse = PainDataWarehouse()
+    warehouse.register_patient("P", {"group": "original"})
+    warehouse.store_clinical_data("P", "visit", {"value": 1})
+    before = copy.deepcopy(warehouse.query_patient_data("P"))
+    with pytest.raises(ValueError, match="already exists"):
+        warehouse.register_patient("P", {"group": "other"})
+    assert warehouse.query_patient_data("P") == before

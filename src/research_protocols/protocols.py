@@ -89,6 +89,10 @@ class ResearchProtocols:
         if protocol_id not in self.studies:
             self.studies[protocol_id] = {"participants": [], "data": []}
 
+        for participant in self.studies[protocol_id]["participants"]:
+            if participant["patient_id"] == patient_id:
+                return participant
+
         enrollment = {
             "patient_id": patient_id,
             "protocol_id": protocol_id,
@@ -114,11 +118,11 @@ class ResearchProtocols:
         Raises:
             ValueError: If the patient is not enrolled in this study.
         """
-        if protocol_id not in self.studies:
+        if protocol_id not in self.protocols:
             logger.warning(f"Protocol {protocol_id} not found for data collection")
             return
 
-        if not any(
+        if protocol_id not in self.studies or not any(
             participant["patient_id"] == patient_id
             for participant in self.studies[protocol_id]["participants"]
         ):

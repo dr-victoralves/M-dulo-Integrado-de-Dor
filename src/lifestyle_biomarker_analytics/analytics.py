@@ -35,10 +35,10 @@ class LifestyleBiomarkerAnalytics:
 
         record = {
             "date": date,
-            "sleep_hours": data.get("sleep_hours", 0),
-            "exercise_minutes": data.get("exercise_minutes", 0),
-            "stress_level": data.get("stress_level", 0),
-            "pain_level": data.get("pain_level", 0),
+            "sleep_hours": data.get("sleep_hours"),
+            "exercise_minutes": data.get("exercise_minutes"),
+            "stress_level": data.get("stress_level"),
+            "pain_level": data.get("pain_level"),
             "diet_quality": data.get("diet_quality", "moderate")
         }
         self.patient_data[patient_id].append(record)
@@ -52,16 +52,19 @@ class LifestyleBiomarkerAnalytics:
             patient_id: Unique patient identifier
 
         Returns:
-            Analysis or None if fewer than seven records are available.
+            Analysis or None if fewer than seven observed pairs are available.
             The correlation field is None when either series has zero variance.
 
         Raises:
             ValueError: If a sleep or pain observation is not finite.
         """
-        if patient_id not in self.patient_data or len(self.patient_data[patient_id]) < 7:
+        data = [
+            d for d in self.patient_data.get(patient_id, [])
+            if d["sleep_hours"] is not None and d["pain_level"] is not None
+        ]
+        if len(data) < 7:
             return None
 
-        data = self.patient_data[patient_id]
         sleep_hours = [d["sleep_hours"] for d in data]
         pain_levels = [d["pain_level"] for d in data]
 
@@ -102,7 +105,10 @@ class LifestyleBiomarkerAnalytics:
         if patient_id not in self.patient_data:
             return None
 
-        data = self.patient_data[patient_id]
+        data = [
+            d for d in self.patient_data[patient_id]
+            if d["exercise_minutes"] is not None and d["pain_level"] is not None
+        ]
         exercise_days = [d for d in data if d["exercise_minutes"] > 0]
         sedentary_days = [d for d in data if d["exercise_minutes"] == 0]
 
@@ -137,20 +143,17 @@ class LifestyleBiomarkerAnalytics:
         triggers = []
 
         # Analyze patterns
-        high_pain_days = [d for d in data if d["pain_level"] > 6]
+        high_pain_days = [d for d in data if d["pain_level"] is not None and d["pain_level"] > 6]
+        sleep = [d["sleep_hours"] for d in high_pain_days if d["sleep_hours"] is not None]
+        stress = [d["stress_level"] for d in high_pain_days if d["stress_level"] is not None]
+        activity = [d["exercise_minutes"] for d in high_pain_days if d["exercise_minutes"] is not None]
 
-        if high_pain_days:
-            avg_sleep_high_pain = sum(d["sleep_hours"] for d in high_pain_days) / len(high_pain_days)
-            avg_stress_high_pain = sum(d["stress_level"] for d in high_pain_days) / len(high_pain_days)
-
-            if avg_sleep_high_pain < 6:
-                triggers.append("insufficient_sleep")
-            if avg_stress_high_pain > 7:
-                triggers.append("high_stress")
-
-            low_activity_days = sum(1 for d in high_pain_days if d["exercise_minutes"] < 15)
-            if low_activity_days / len(high_pain_days) > 0.7:
-                triggers.append("sedentary_lifestyle")
+        if sleep and sum(sleep) / len(sleep) < 6:
+            triggers.append("insufficient_sleep")
+        if stress and sum(stress) / len(stress) > 7:
+            triggers.append("high_stress")
+        if activity and sum(minutes < 15 for minutes in activity) / len(activity) > 0.7:
+            triggers.append("sedentary_lifestyle")
 
         logger.info(f"Identified {len(triggers)} triggers for patient {patient_id}")
         return triggers

@@ -35,6 +35,9 @@ class PainDataWarehouse:
         Returns:
             Registered patient record
         """
+        if patient_id in self.patients:
+            raise ValueError(f"Patient {patient_id} already exists")
+
         patient_record = {
             "patient_id": patient_id,
             "registration_date": datetime.now().isoformat(),
