@@ -1,0 +1,19 @@
+# Core dependencies for Integrated Pain Management System
+# Python 3.8+
+
+# Development and testing
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# Code quality
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.0.0
+
+# Documentation
+sphinx>=6.0.0
+
+# Optional: Add specific requirements for each module as needed
+# numpy>=1.24.0  # For advanced analytics
+# pandas>=2.0.0  # For data processing
+# scikit-learn>=1.2.0  # For ML models in neuromodulation AI
